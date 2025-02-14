@@ -29,25 +29,26 @@ jobs:
     - name: Install Chrome and Chromedriver manually
       run: |
         sudo apt update
-        sudo apt install -y google-chrome-stable unzip curl
-        
+        sudo apt install -y google-chrome-stable unzip curl jq
+
         # Récupérer la version exacte de Chrome
         CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
-        
-        # Récupérer la version correspondante de Chromedriver
-        DRIVER_VERSION=$(curl -sS "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | \
-          jq -r --arg chrome_version "$CHROME_VERSION" '.channels.Stable.downloads.chromedriver[] | select(.platform == "linux64") | .url')
 
-        if [ -z "$DRIVER_VERSION" ]; then
+        # Récupérer la version correspondante de Chromedriver
+        DRIVER_URL=$(curl -sS "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | \
+          jq -r '.channels.Stable.downloads.chromedriver[] | select(.platform == "linux64") | .url')
+
+        if [ -z "$DRIVER_URL" ]; then
           echo "No matching Chromedriver version found!"
           exit 1
         fi
 
         # Télécharger et installer Chromedriver
-        wget -N "$DRIVER_VERSION" -O chromedriver_linux64.zip
+        wget -N "$DRIVER_URL" -O chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
-        sudo mv chromedriver /usr/local/bin/
+        sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
         sudo chmod +x /usr/local/bin/chromedriver
+
 
 
 
