@@ -1,0 +1,52 @@
+name: Wind Data Logger  
+
+on:  
+  schedule:  
+    - cron: '0 01 * * *'  # Exécute à 02h00 UTC chaque jour  
+
+  workflow_dispatch:  # Permet de lancer le script manuellement  
+
+jobs:  
+  run-script:  
+    runs-on: ubuntu-latest  
+
+    permissions:
+      contents: write  # Ajout des permissions d'écriture
+
+    steps:  
+      - name: Checkout Repository  
+        uses: actions/checkout@v4  
+
+      - name: Setup Python  
+        uses: actions/setup-python@v4  
+        with:  
+          python-version: '3.10'  
+
+      - name: Install dependencies  
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser  # Installer Chrome pour Selenium
+          pip install selenium webdriver-manager  # Installer les librairies nécessaires
+
+      - name: Run script  
+        run: |
+          # Configurer le chemin de Chrome pour le mode headless
+          echo "CHROME_BIN=/usr/bin/chromium-browser" >> $GITHUB_ENV
+          python prt.py  # Exécuter votre script Python
+
+      - name: Configure Git user identity
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions Bot"
+
+      - name: Force Git to track changes  
+        run: |
+          git add -f wind_data.csv
+          git commit -m "Mise à jour forcée des données de vent" || echo "Aucune modification à enregistrer"
+          git push origin main
+
+      - name: Check if the file is modified
+        run: |
+          git status
+          ls -l wind_data.csv  # Voir la taille du fichier après l’exécution
+          cat wind_data.csv     # Affiche les 5 premières lignes pour voir si les données sont là
