@@ -43,7 +43,7 @@ def get_wind_data():
             direction_value = wind_direction_element.get_attribute("title").split(" ")[1].strip("°()")
 
             # Récupérer la vitesse du vent (texte dans <td>)
-            speed_xpath = f"//*[@id='tabid_1_0_GUST']/td[{i}]"
+            speed_xpath = f"//*[@id='tabid_1_0_WINDSPD']/td[{i}]"
             wind_speed_element = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, speed_xpath))
             )
@@ -76,10 +76,13 @@ current_directions, current_speeds = get_wind_data()
 if current_directions and current_speeds:
     with open(filename, mode='a', newline='') as file:
         writer = csv.writer(file)
-        for i in range(len(current_directions)):
-            writer.writerow([time.strftime("%Y-%m-%d"), hours_of_interest[i], current_directions[i], current_speeds[i]])
+        adjusted_directions = [(direction + 180) % 360 for direction in current_directions]
+        for i in range(len(adjusted_directions)):
+            writer.writerow([time.strftime("%Y-%m-%d"), hours_of_interest[i], adjusted_directions[i], current_speeds[i]])
 
-    print(f"📊 Données enregistrées : Directions = {current_directions}, Vitesses (km/h) = {current_speeds}")
+    print(f"📊 Données enregistrées : Directions = {adjusted_directions}, Vitesses (km/h) = {current_speeds}")
 
 # Fermer Selenium
+
+
 driver.quit()
