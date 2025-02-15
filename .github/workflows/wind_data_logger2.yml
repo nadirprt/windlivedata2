@@ -2,7 +2,7 @@ name: Run Selenium Scraper
 
 on:
   schedule:
-    - cron: '0 3 * * *' # Exécuter tous les jours à 1h du matin UTC
+    - cron: '0 8 * * *' # Exécuter tous les jours à 1h du matin UTC
   push:
     branches:
       - main
