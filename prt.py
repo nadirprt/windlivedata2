@@ -31,7 +31,7 @@ def get_wind_data():
     wind_speeds = []
 
     # Indices des valeurs à récupérer
-    indices = [13, 16, 19]
+    indices = [3, 6, 9]
 
     for i in indices:
         try:
