@@ -76,11 +76,10 @@ current_directions, current_speeds = get_wind_data()
 if current_directions and current_speeds:
     with open(filename, mode='a', newline='') as file:
         writer = csv.writer(file)
-        adjusted_directions = [(direction + 180) % 360 for direction in current_directions]
-        for i in range(len(adjusted_directions)):
-            writer.writerow([time.strftime("%Y-%m-%d"), hours_of_interest[i], adjusted_directions[i], current_speeds[i]])
+        for i in range(len(current_directions)):
+            writer.writerow([time.strftime("%Y-%m-%d"), hours_of_interest[i], current_directions[i], current_speeds[i]])
 
-    print(f"📊 Données enregistrées : Directions = {adjusted_directions}, Vitesses (km/h) = {current_speeds}")
+    print(f"📊 Données enregistrées : Directions = {current_directions}, Vitesses (km/h) = {current_speeds}")
 
 # Fermer Selenium
 
